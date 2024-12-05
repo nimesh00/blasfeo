@@ -18089,7 +18089,7 @@
 
 
 
-//                                 w0        x1             x2         x3         x4            x5         w6       x7         sp+0
+//                                  w0        x1             x2         x3         x4            x5         w6       x7         sp+0
 // void kernel_dgemm_nt_4x4_lib44cc(int kmax, double *alpha, double *A, double *B, double *beta, double *C, int ldc, double *D, int ldd)
 
 	.align	4
@@ -18191,7 +18191,8 @@
 
 
 
-//                                     w0        x1             x2         x3         x4            x5         w6       x7         sp+0     sp+8    sp+16
+// OS_LINUX                            w0        x1             x2         x3         x4            x5         w6       x7         sp+0     sp+8    sp+16
+// OS_MAC                              w0        x1             x2         x3         x4            x5         w6       x7         sp+0     sp+4    sp+8
 // void kernel_dgemm_nt_4x4_vs_lib44cc(int kmax, double *alpha, double *A, double *B, double *beta, double *C, int ldc, double *D, int ldd, int m1, int n1)
 
 	.align	4
@@ -18227,8 +18228,13 @@
 	mov		x10, x5 // C
 	mov		w11, w6 // ldc
 	lsl		w11, w11, #3 // 8*ldc
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 8)] // m1
 	ldr		w13, [sp, #(STACKSIZE + 16)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 4)] // m1
+	ldr		w13, [sp, #(STACKSIZE + 8)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_AB_4X4_VS_LIB
@@ -18242,8 +18248,13 @@
 	mov		x8, x7 // D
 	ldr		w9, [sp, #(STACKSIZE + 0)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 8)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 16)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 4)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 8)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -18265,7 +18276,7 @@
 
 
 
-//                                 w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8
+//                                  w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8
 // void kernel_dgemm_nt_4x4_lib4ccc(int kmax, double *alpha, double *A, double *B, int ldb, double *beta, double *C, int ldc, double *D, int ldd)
 
 	.align	4
@@ -18351,7 +18362,8 @@
 
 
 
-//                                    w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8     sp+16   sp+24
+// OS_LINUX                            w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8     sp+16   sp+24
+// OS_MAC                              w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8     sp+12   sp+16
 // void kernel_dgemm_nt_4x4_vs_lib4ccc(int kmax, double *alpha, double *A, double *B, int ldb, double *beta, double *C, int ldc, double *D, int ldd, int m1, int n1)
 
 	.align	4
@@ -18375,7 +18387,11 @@
 	mov		w11, w4 // ldb
 	lsl		w11, w11, #3 // 8*ldb
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 16)] // n1
+#endif
 	cmp		w12, #1
 	bgt		100f
 
@@ -18389,7 +18405,11 @@
 
 100:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 16)] // n1
+#endif
 	cmp		w12, #2
 	bgt		101f
 
@@ -18403,7 +18423,11 @@
 
 101:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 16)] // n1
+#endif
 	cmp		w12, #3
 	bgt		102f
 
@@ -18447,8 +18471,13 @@
 	mov		x10, x6 // C
 	mov		w11, w7 // ldc
 	lsl		w11, w11, #3 // 8*ldc
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 16)] // m1
 	ldr		w13, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 12)] // m1
+	ldr		w13, [sp, #(STACKSIZE + 16)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_AB_4X4_VS_LIB
@@ -18462,8 +18491,13 @@
 	ldr		x8, [sp, #(STACKSIZE + 0)] // D
 	ldr		w9, [sp, #(STACKSIZE + 8)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 16)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 12)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 16)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -18486,7 +18520,7 @@
 
 
 
-//                                 w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8      sp+16
+//                                  w0        x1             x2         x3       x4         x5       w6            x7         sp+0     sp+8       sp+16
 // void kernel_dgemm_nt_4x4_libcccc(int kmax, double *alpha, double *A, int lda, double *B, int ldb, double *beta, double *C, int ldc, double *D, int ldd)
 
 	.align	4
@@ -18573,7 +18607,8 @@
 
 
 
-//                                     w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8      sp+16   sp+24  sp+32
+// OS_LINUX                            w0        x1             x2         x3       x4         x5       w6            x7         sp+0     sp+8       sp+16    sp+24   sp+32
+// OS_MAC                              w0        x1             x2         x3       x4         x5       w6            x7         sp+0     sp+8       sp+16    sp+20   sp+24
 // void kernel_dgemm_nt_4x4_vs_libcccc(int kmax, double *alpha, double *A, int lda, double *B, int ldb, double *beta, double *C, int ldc, double *D, int ldd, int m1, int n1)
 
 	.align	4
@@ -18598,9 +18633,15 @@
 	mov		x11, x4 // B
 	mov		w12, w5 // ldb
 	lsl		w12, w12, #3 // 8*ldb
+#if defined(OS_LINUX)
 	ldr		w13, [sp, #(STACKSIZE + 24)] // m1
 
 	ldr		w14, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w13, [sp, #(STACKSIZE + 20)] // m1
+
+	ldr		w14, [sp, #(STACKSIZE + 24)] // n1
+#endif
 
 	cmp		w14, #1
 	bgt		100f
@@ -18671,8 +18712,13 @@
 	mov		x10, x7 // C
 	ldr		w11, [sp, #(STACKSIZE + 0)] // ldc
 	lsl		w11, w11, #3 // 8*ldc
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // m1
 	ldr		w13, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 20)] // m1
+	ldr		w13, [sp, #(STACKSIZE + 24)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_AB_4X4_VS_LIB
@@ -18686,8 +18732,13 @@
 	ldr		x8, [sp, #(STACKSIZE + 8)] // D
 	ldr		w9, [sp, #(STACKSIZE + 16)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 24)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 20)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 24)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -18709,7 +18760,7 @@
 
 
 
-//                                 w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8
+//                                  w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8
 // void kernel_dgemm_nn_4x4_lib4ccc(int kmax, double *alpha, double *A, double *B, int ldb, double *beta, double *C, int ldc, double *D, int ldd)
 
 	.align	4
@@ -18794,7 +18845,8 @@
 
 
 
-//                                    w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8     sp+16   sp+24
+// OS_LINUX                            w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8     sp+16   sp+24
+// OS_MAC                              w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8     sp+12   sp+16
 // void kernel_dgemm_nn_4x4_vs_lib4ccc(int kmax, double *alpha, double *A, double *B, int ldb, double *beta, double *C, int ldc, double *D, int ldd, int m1, int n1)
 
 	.align	4
@@ -18818,7 +18870,11 @@
 	mov		w11, w4 // ldb
 	lsl		w11, w11, #3 // 8*ldb
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 16)] // n1
+#endif
 	cmp		w12, #1
 	bgt		100f
 
@@ -18832,7 +18888,11 @@
 
 100:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 16)] // n1
+#endif
 	cmp		w12, #2
 	bgt		101f
 
@@ -18846,7 +18906,11 @@
 
 101:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 16)] // n1
+#endif
 	cmp		w12, #3
 	bgt		102f
 
@@ -18890,8 +18954,13 @@
 	mov		x10, x6 // C
 	mov		w11, w7 // ldc
 	lsl		w11, w11, #3 // 8*ldc
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 16)] // m1
 	ldr		w13, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 12)] // m1
+	ldr		w13, [sp, #(STACKSIZE + 16)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_AB_4X4_VS_LIB
@@ -18905,8 +18974,13 @@
 	ldr		x8, [sp, #(STACKSIZE + 0)] // D
 	ldr		w9, [sp, #(STACKSIZE + 8)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 16)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 12)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 16)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -18928,7 +19002,7 @@
 
 
 
-//                                 w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8      sp+16
+//                                  w0        x1             x2         x3       x4         x5       w6            x7         sp+0     sp+8       sp+16
 // void kernel_dgemm_nn_4x4_libcccc(int kmax, double *alpha, double *A, int lda, double *B, int ldb, double *beta, double *C, int ldc, double *D, int ldd)
 
 	.align	4
@@ -19015,7 +19089,8 @@
 
 
 
-//                                    w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8     sp+16   sp+24     sp+32
+// OS_LINUX                            w0        x1             x2         x3       x4         x5       w6            x7         sp+0     sp+8       sp+16    sp+24   sp+32
+// OS_MAC                              w0        x1             x2         x3       x4         x5       w6            x7         sp+0     sp+8       sp+16    sp+20   sp+24
 // void kernel_dgemm_nn_4x4_vs_libcccc(int kmax, double *alpha, double *A, int lda, double *B, int ldb, double *beta, double *C, int ldc, double *D, int ldd, int m1, int n1)
 
 	.align	4
@@ -19040,9 +19115,15 @@
 	mov		x11, x4 // B
 	mov		w12, w5 // ldb
 	lsl		w12, w12, #3 // 8*ldb
+#if defined(OS_LINUX)
 	ldr		w13, [sp, #(STACKSIZE + 24)] // m1
 
 	ldr		w14, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w13, [sp, #(STACKSIZE + 20)] // m1
+
+	ldr		w14, [sp, #(STACKSIZE + 24)] // n1
+#endif
 
 	cmp		w14, #1
 	bgt		100f
@@ -19095,8 +19176,8 @@
 
 	// prefetch
 	// TODO prefethc vs
-//	ldr		x8, [sp, #(STACKSIZE + 0)] // D
-//	ldr		w9, [sp, #(STACKSIZE + 8)] // ldd
+//	ldr		x8, [sp, #(STACKSIZE + 8)] // D
+//	ldr		w9, [sp, #(STACKSIZE + 16)] // ldd
 //	lsl		w9, w9, #3 // 8*sdd
 
 #if MACRO_LEVEL>=1
@@ -19113,8 +19194,13 @@
 	mov		x10, x7 // C
 	ldr		w11, [sp, #(STACKSIZE + 0)] // ldc
 	lsl		w11, w11, #3 // 8*ldc
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // m1
 	ldr		w13, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 20)] // m1
+	ldr		w13, [sp, #(STACKSIZE + 24)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_AB_4X4_VS_LIB
@@ -19128,8 +19214,13 @@
 	ldr		x8, [sp, #(STACKSIZE + 8)] // D
 	ldr		w9, [sp, #(STACKSIZE + 16)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 24)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 20)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 24)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -19151,7 +19242,7 @@
 
 
 
-//                                 w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8      sp+16
+//                                  w0        x1             x2         x3         x4       x5            w6         x7       sp+0     sp+8       sp+16
 // void kernel_dgemm_tt_4x4_libcccc(int kmax, double *alpha, double *A, int lda, double *B, int ldb, double *beta, double *C, int ldc, double *D, int ldd)
 
 	.align	4
@@ -19244,7 +19335,8 @@
 
 
 
-//                                    w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8     sp+16   sp+24     sp+32
+// OS_LINUX                            w0        x1             x2         x3       x4         x5       w6            x7         sp+0     sp+8       sp+16    sp+24   sp+32
+// OS_MAC                              w0        x1             x2         x3       x4         x5       w6            x7         sp+0     sp+8       sp+16    sp+20   sp+24
 // void kernel_dgemm_tt_4x4_vs_libcccc(int kmax, double *alpha, double *A, int lda, double *B, int ldb, double *beta, double *C, int ldc, double *D, int ldd, int m1, int n1)
 
 	.align	4
@@ -19269,9 +19361,15 @@
 	mov		x11, x2 // A
 	mov		w12, w3 // lda
 	lsl		w12, w12, #3 // 8*lda
+#if defined(OS_LINUX)
 	ldr		w13, [sp, #(STACKSIZE + 32)] // n1
 
 	ldr		w14, [sp, #(STACKSIZE + 24)] // m1
+#else // defined(OS_MAC)
+	ldr		w13, [sp, #(STACKSIZE + 24)] // n1
+
+	ldr		w14, [sp, #(STACKSIZE + 20)] // m1
+#endif
 
 	cmp		w14, #1
 	bgt		100f
@@ -19342,8 +19440,13 @@
 	mov		x10, x7 // C
 	ldr		w11, [sp, #(STACKSIZE + 0)] // ldc
 	lsl		w11, w11, #3 // 8*ldc
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // m1
 	ldr		w13, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 20)] // m1
+	ldr		w13, [sp, #(STACKSIZE + 24)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_TRAN_4X4_LIB
@@ -19363,8 +19466,13 @@
 	ldr		x8, [sp, #(STACKSIZE + 8)] // D
 	ldr		w9, [sp, #(STACKSIZE + 16)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 24)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 20)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 24)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -19386,7 +19494,7 @@
 
 
 
-//                                 w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8
+//                                    w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8
 // void kernel_dsyrk_nt_l_4x4_lib4ccc(int kmax, double *alpha, double *A, double *B, int ldb, double *beta, double *C, int ldc, double *D, int ldd)
 
 	.align	4
@@ -19472,7 +19580,8 @@
 
 
 
-//                                    w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8     sp+16   sp+24
+// OS_LINUX                              w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8     sp+16   sp+24
+// OS_MAC                                w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8     sp+12   sp+16
 // void kernel_dsyrk_nt_l_4x4_vs_lib4ccc(int kmax, double *alpha, double *A, double *B, int ldb, double *beta, double *C, int ldc, double *D, int ldd, int m1, int n1)
 
 	.align	4
@@ -19496,7 +19605,11 @@
 	mov		w11, w4 // ldb
 	lsl		w11, w11, #3 // 8*ldb
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 16)] // n1
+#endif
 	cmp		w12, #1
 	bgt		100f
 
@@ -19510,7 +19623,11 @@
 
 100:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 16)] // n1
+#endif
 	cmp		w12, #2
 	bgt		101f
 
@@ -19524,7 +19641,11 @@
 
 101:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 16)] // n1
+#endif
 	cmp		w12, #3
 	bgt		102f
 
@@ -19568,8 +19689,13 @@
 	mov		x10, x6 // C
 	mov		w11, w7 // ldc
 	lsl		w11, w11, #3 // 8*ldc
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 16)] // m1
 	ldr		w13, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 12)] // m1
+	ldr		w13, [sp, #(STACKSIZE + 16)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_AB_4X4_VS_LIB
@@ -19583,8 +19709,13 @@
 	ldr		x8, [sp, #(STACKSIZE + 0)] // D
 	ldr		w9, [sp, #(STACKSIZE + 8)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 16)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 12)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 16)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_L_4X4_VS_LIB
@@ -19607,7 +19738,7 @@
 
 
 
-//                                   w0        x1             x2         x3         x4            x5         w6       x7         sp+0
+//                                    w0        x1             x2         x3         x4            x5         w6       x7         sp+0
 // void kernel_dsyrk_nt_l_4x4_lib44cc(int kmax, double *alpha, double *A, double *B, double *beta, double *C, int ldc, double *D, int ldd)
 
 	.align	4
@@ -19677,7 +19808,8 @@
 
 
 
-//                                      w0        x1             x2         x3         x4            x5         w6       x7         sp+0     sp+8    sp+16
+// OS_LINUX                              w0        x1             x2         x3         x4            x5         w6       x7         sp+0     sp+8    sp+16
+// OS_MAC                                w0        x1             x2         x3         x4            x5         w6       x7         sp+0     sp+4    sp+8
 // void kernel_dsyrk_nt_l_4x4_vs_lib44cc(int kmax, double *alpha, double *A, double *B, double *beta, double *C, int ldc, double *D, int ldd, int m1, int n1)
 
 	.align	4
@@ -19713,8 +19845,13 @@
 	mov		x10, x5 // C
 	mov		w11, w6 // ldc
 	lsl		w11, w11, #3 // 8*ldc
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 8)] // m1
 	ldr		w13, [sp, #(STACKSIZE + 16)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 4)] // m1
+	ldr		w13, [sp, #(STACKSIZE + 8)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_AB_4X4_VS_LIB
@@ -19728,8 +19865,13 @@
 	mov		x8, x7 // D
 	ldr		w9, [sp, #(STACKSIZE + 0)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 8)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 16)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 4)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 8)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_L_4X4_VS_LIB
@@ -19752,7 +19894,7 @@
 
 
 
-//                                   w0        x1             x2         x3         x4            x5         w6       x7         sp+0
+//                                    w0        x1             x2         x3         x4            x5         w6       x7         sp+0
 // void kernel_dsyrk_nt_u_4x4_lib44cc(int kmax, double *alpha, double *A, double *B, double *beta, double *C, int ldc, double *D, int ldd)
 
 	.align	4
@@ -19822,7 +19964,8 @@
 
 
 
-//                                      w0        x1             x2         x3         x4            x5         w6       x7         sp+0     sp+8    sp+16
+// OS_LINUX                              w0        x1             x2         x3         x4            x5         w6       x7         sp+0     sp+8    sp+16
+// OS_MAC                                w0        x1             x2         x3         x4            x5         w6       x7         sp+0     sp+4    sp+8
 // void kernel_dsyrk_nt_u_4x4_vs_lib44cc(int kmax, double *alpha, double *A, double *B, double *beta, double *C, int ldc, double *D, int ldd, int m1, int n1)
 
 	.align	4
@@ -19858,8 +20001,13 @@
 	mov		x10, x5 // C
 	mov		w11, w6 // ldc
 	lsl		w11, w11, #3 // 8*ldc
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 8)] // m1
 	ldr		w13, [sp, #(STACKSIZE + 16)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 4)] // m1
+	ldr		w13, [sp, #(STACKSIZE + 8)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_AB_4X4_VS_LIB
@@ -19873,8 +20021,13 @@
 	mov		x8, x7 // D
 	ldr		w9, [sp, #(STACKSIZE + 0)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 8)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 16)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 4)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 8)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_U_4X4_VS_LIB
@@ -19994,7 +20147,8 @@
 
 
 
-//                                   w0     x1             x2          x3          w4        x5          x6          w7        sp+0          sp+8       sp+16    sp+24      sp+32    sp+40   sp+48
+// OS_LINUX                          w0     x1             x2          x3          w4        x5          x6          w7        sp+0          sp+8       sp+16    sp+24      sp+32    sp+40   sp+48
+// OS_MAC                            w0     x1             x2          x3          w4        x5          x6          w7        sp+0          sp+8       sp+16    sp+24      sp+32    sp+36   sp+40
 // void kernel_dger2k_nt_4x4_lib4ccc(int k, double *alpha, double *A0, double *B0, int ldb0, double *A1, double *B1, int ldb1, double *beta, double *C, int ldc, double *D, int ldd, int m1, int n1);
 
 	.align	4
@@ -20012,7 +20166,11 @@
 
 
 	// call inner kernel gemm nt
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 48)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 40)] // n1
+#endif
 	cmp		w12, #1
 	bgt		100f
 
@@ -20044,7 +20202,11 @@
 
 100:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 48)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 40)] // n1
+#endif
 	cmp		w12, #2
 	bgt		101f
 
@@ -20076,7 +20238,11 @@
 
 101:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 48)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 40)] // n1
+#endif
 	cmp		w12, #3
 	bgt		102f
 
@@ -20156,8 +20322,13 @@
 	ldr		x10, [sp, #(STACKSIZE + 8)] // C
 	ldr		w11, [sp, #(STACKSIZE + 16)] // ldc
 	lsl		w11, w11, #3 // 8*ldc
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 40)] // m1
 	ldr		w13, [sp, #(STACKSIZE + 48)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 36)] // m1
+	ldr		w13, [sp, #(STACKSIZE + 40)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_AB_4X4_VS_LIB
@@ -20171,8 +20342,13 @@
 	ldr		x8, [sp, #(STACKSIZE + 24)] // D
 	ldr		w9, [sp, #(STACKSIZE + 32)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 40)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 48)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 36)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 40)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -20307,7 +20483,8 @@
 
 
 
-//                                   w0     x1             x2         x3           x4          x5          x6            x7         sp+0     sp+8       sp+16    sp+24   sp+32
+// OS_LINUX                          w0     x1             x2         x3           x4          x5          x6            x7         sp+0     sp+8       sp+16    sp+24   sp+32
+// OS_MAC                            w0     x1             x2         x3           x4          x5          x6            x7         sp+0     sp+8       sp+16    sp+20   sp+24
 // void kernel_dger2k_nt_4x4_lib44cc(int k, double *alpha, double *A0, double *B0, double *A1, double *B1, double *beta, double *C, int ldc, double *D, int ldd, int m1, int n1);
 
 	.align	4
@@ -20353,8 +20530,13 @@
 	mov		x10, x7 // C
 	ldr		w11, [sp, #(STACKSIZE + 0)] // ldc
 	lsl		w11, w11, #3 // 8*ldc
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // m1
 	ldr		w13, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 20)] // m1
+	ldr		w13, [sp, #(STACKSIZE + 24)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_AB_4X4_VS_LIB
@@ -20368,8 +20550,13 @@
 	ldr		x8, [sp, #(STACKSIZE + 8)] // D
 	ldr		w9, [sp, #(STACKSIZE + 16)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 24)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 20)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 24)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -20378,6 +20565,9 @@
 #endif
 
 
+#if defined(OS_LINUX)
+#else // defined(OS_MAC)
+#endif
 
 	EPILOGUE
 
@@ -20484,7 +20674,8 @@
 
 
 
-//                                     w0     x1             x2         x3           x4          x5          x6            x7         sp+0     sp+8       sp+16    sp+24   sp+32
+// OS_LINUX                            w0     x1             x2         x3           x4          x5          x6            x7         sp+0     sp+8       sp+16    sp+24   sp+32
+// OS_MAC                              w0     x1             x2         x3           x4          x5          x6            x7         sp+0     sp+8       sp+16    sp+20   sp+24
 // void kernel_dsyr2k_nt_l_4x4_lib44cc(int k, double *alpha, double *A0, double *B0, double *A1, double *B1, double *beta, double *C, int ldc, double *D, int ldd, int m1, int n1);
 
 	.align	4
@@ -20530,8 +20721,13 @@
 	mov		x10, x7 // C
 	ldr		w11, [sp, #(STACKSIZE + 0)] // ldc
 	lsl		w11, w11, #3 // 8*ldc
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // m1
 	ldr		w13, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 20)] // m1
+	ldr		w13, [sp, #(STACKSIZE + 24)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_AB_4X4_VS_LIB
@@ -20545,8 +20741,13 @@
 	ldr		x8, [sp, #(STACKSIZE + 8)] // D
 	ldr		w9, [sp, #(STACKSIZE + 16)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 24)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 20)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 24)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_L_4X4_VS_LIB
@@ -20648,7 +20849,8 @@
 
 
 
-//                                             w0        x1             x2         x3         x4            x5         x6         w7       sp+0    sp+8
+// OS_LINUX                                    w0        x1             x2         x3         x4            x5         x6         w7       sp+0    sp+8
+// OS_MAC                                      w0        x1             x2         x3         x4            x5         x6         w7       sp+0    sp+4
 // void kernel_dtrmm_nt_rl_4x4_tran_vs_lib444c(int kmax, double *alpha, double *A, double *B, double *beta, double *C, double *D, int ldd, int m1, int n1)
 
 	.align	4
@@ -20704,7 +20906,11 @@
 	mov		w9, w7 // ldd
 	lsl		w9, w9, #3 // 8*ldd
 	ldr		w10, [sp, #(STACKSIZE + 0)] // m1
+#if defined(OS_LINUX)
 	ldr		w11, [sp, #(STACKSIZE + 8)] // n1
+#else // defined(OS_MAC)
+	ldr		w11, [sp, #(STACKSIZE + 4)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_TRAN_4X4_LIB
@@ -20814,7 +21020,8 @@
 
 
 
-//                                             w0        x1             x2         x3         w4       x5            x6         x7         sp+0     sp+8    sp+16
+// OS_LINUX                                    w0        x1             x2         x3         w4       x5            x6         x7         sp+0     sp+8    sp+16
+// OS_MAC                                      w0        x1             x2         x3         w4       x5            x6         x7         sp+0     sp+4    sp+8
 // void kernel_dtrmm_nt_rl_4x4_tran_vs_lib4c4c(int kmax, double *alpha, double *A, double *B, int ldb, double *beta, double *C, double *D, int ldd, int m1, int n1)
 
 	.align	4
@@ -20838,7 +21045,11 @@
 	mov		w11, w4 // ldb
 	lsl		w11, w11, #3 // 8*ldb
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 8)] // m1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 4)] // m1
+#endif
 	cmp		w12, #1
 	bgt		100f
 
@@ -20852,7 +21063,11 @@
 
 100:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 8)] // m1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 4)] // m1
+#endif
 	cmp		w12, #2
 	bgt		101f
 
@@ -20866,7 +21081,11 @@
 
 101:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 8)] // m1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 4)] // m1
+#endif
 	cmp		w12, #3
 	bgt		102f
 
@@ -20888,7 +21107,11 @@
 
 103:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 8)] // m1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 4)] // m1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_EDGE_TRMM_NT_RL_4X4_VS_LIB4C
@@ -20915,8 +21138,13 @@
 	mov		x8, x7 // D
 	ldr		w9, [sp, #(STACKSIZE + 0)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 8)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 16)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 4)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 8)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_TRAN_4X4_LIB
@@ -21018,7 +21246,8 @@
 
 
 
-//                                        w0        x1             x2         x3         x4            x5         x6         w7       sp+0    sp+8
+// OS_LINUX                               w0        x1             x2         x3         x4            x5         x6         w7       sp+0    sp+8
+// OS_MAC                                 w0        x1             x2         x3         x4            x5         x6         w7       sp+0    sp+4
 // void kernel_dtrmm_nt_ru_4x4_vs_lib444c(int kmax, double *alpha, double *A, double *B, double *beta, double *C, double *D, int ldd, int m1, int n1)
 
 	.align	4
@@ -21072,7 +21301,11 @@
 	mov		w9, w7 // ldd
 	lsl		w9, w9, #3 // 8*ldd
 	ldr		w10, [sp, #(STACKSIZE + 0)] // m1
+#if defined(OS_LINUX)
 	ldr		w11, [sp, #(STACKSIZE + 8)] // n1
+#else // defined(OS_MAC)
+	ldr		w11, [sp, #(STACKSIZE + 4)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -21174,7 +21407,8 @@
 
 
 
-//                                             w0        x1             x2         x3         x4            x5         x6         w7       sp+0    sp+8
+// OS_LINUX                                    w0        x1             x2         x3         x4            x5         x6         w7       sp+0    sp+8
+// OS_MAC                                      w0        x1             x2         x3         x4            x5         x6         w7       sp+0    sp+4
 // void kernel_dtrmm_nt_ru_4x4_tran_vs_lib444c(int kmax, double *alpha, double *A, double *B, double *beta, double *C, double *D, int ldd, int m1, int n1)
 
 	.align	4
@@ -21228,7 +21462,11 @@
 	mov		w9, w7 // ldd
 	lsl		w9, w9, #3 // 8*ldd
 	ldr		w10, [sp, #(STACKSIZE + 0)] // m1
+#if defined(OS_LINUX)
 	ldr		w11, [sp, #(STACKSIZE + 8)] // n1
+#else // defined(OS_MAC)
+	ldr		w11, [sp, #(STACKSIZE + 4)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_TRAN_4X4_LIB
@@ -21334,7 +21572,8 @@
 
 
 
-//                                        w0        x1             x2         x3         w4       x5            x6         w7       sp+0       sp+8     sp+16   sp+24
+// OS_LINUX                               w0        x1             x2         x3         w4       x5            x6         w7       sp+0       sp+8     sp+16   sp+24
+// OS_MAC                                 w0        x1             x2         x3         w4       x5            x6         w7       sp+0       sp+8     sp+12   sp+16
 // void kernel_dtrmm_nn_rl_4x4_vs_lib4ccc(int kmax, double *alpha, double *A, double *B, int ldb, double *beta, double *C, int ldc, double *D, int ldd, int m1, int n1)
 
 	.align	4
@@ -21364,7 +21603,11 @@
 	CALL(inner_edge_trmm_nn_rl_4x4_vs_lib4c)
 #endif
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 16)] // n1
+#endif
 	cmp		w12, #1
 	bgt		100f
 
@@ -21378,7 +21621,11 @@
 
 100:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 16)] // n1
+#endif
 	cmp		w12, #2
 	bgt		101f
 
@@ -21392,7 +21639,11 @@
 
 101:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 16)] // n1
+#endif
 	cmp		w12, #3
 	bgt		102f
 
@@ -21422,8 +21673,13 @@
 	mov		x10, x6 // C
 	mov		w11, w7 // ldc
 	lsl		w11, w11, #3 // 8*ldc
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 16)] // m1
 	ldr		w13, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 12)] // m1
+	ldr		w13, [sp, #(STACKSIZE + 16)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_AB_4X4_VS_LIB
@@ -21437,8 +21693,13 @@
 	ldr		x8, [sp, #(STACKSIZE + 0)] // D
 	ldr		w9, [sp, #(STACKSIZE + 8)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 16)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 12)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 16)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -21542,7 +21803,8 @@
 
 
 
-//                                             w0        x1             x2         x3         w4       x5            x6         x7         sp+0     sp+8    sp+16
+// OS_LINUX                                    w0        x1             x2         x3         w4       x5            x6         x7         sp+0     sp+8    sp+16
+// OS_MAC                                      w0        x1             x2         x3         w4       x5            x6         x7         sp+0     sp+4    sp+8
 // void kernel_dtrmm_nn_rl_4x4_tran_vs_lib4c4c(int kmax, double *alpha, double *A, double *B, int ldb, double *beta, double *C, double *D, int ldd, int m1, int n1)
 
 	.align	4
@@ -21572,7 +21834,11 @@
 	CALL(inner_edge_trmm_nn_rl_4x4_vs_lib4c)
 #endif
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 8)] // m1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 4)] // m1
+#endif
 	cmp		w12, #1
 	bgt		100f
 
@@ -21586,7 +21852,11 @@
 
 100:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 8)] // m1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 4)] // m1
+#endif
 	cmp		w12, #2
 	bgt		101f
 
@@ -21600,7 +21870,11 @@
 
 101:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 8)] // m1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 4)] // m1
+#endif
 	cmp		w12, #3
 	bgt		102f
 
@@ -21641,8 +21915,13 @@
 	mov		x8, x7 // D
 	ldr		w9, [sp, #(STACKSIZE + 0)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 8)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 16)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 4)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 8)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_TRAN_4X4_LIB
@@ -21753,7 +22032,8 @@
 
 
 
-//                                             w0        x1         x2         x3            x4         w5       x6         w7       sp+0       sp+8     sp+16               sp+24   sp+32
+// OS_LINUX                                    w0        x1         x2         x3            x4         w5       x6         w7       sp+0       sp+8     sp+16               sp+24   sp+32
+// OS_MAC                                      w0        x1         x2         x3            x4         w5       x6         w7       sp+0       sp+8     sp+16               sp+24   sp+28
 // void kernel_dtrsm_nt_rl_inv_4x4_vs_lib44ccc(int kmax, double *A, double *B, double *beta, double *C, int ldc, double *D, int ldd, double *E, int lde, double *inv_diag_E, int m1, int n1)
 
 	.align	4
@@ -21789,7 +22069,11 @@
 	mov		w10, w5 // ldc
 	lsl		w10, w10, #3 // 8*ldc
 	ldr		w11, [sp, #(STACKSIZE + 24)] // m1
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 28)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_M1B_4X4_VS_LIB
@@ -21804,7 +22088,11 @@
 	ldr		w9, [sp, #(STACKSIZE + 8)] // sde
 	lsl		w9, w9, #3 // 8*ldc
 	ldr		x10, [sp, #(STACKSIZE + 16)] // inv_diag_E
+#if defined(OS_LINUX)
 	ldr		w11, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w11, [sp, #(STACKSIZE + 28)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_EDGE_TRSM_RLT_INV_4X4_VS_LIB
@@ -21819,7 +22107,11 @@
 	mov		w9, w7 // ldd
 	lsl		w9, w9, #3 // 8*ldd
 	ldr		w10, [sp, #(STACKSIZE + 24)] // m1
+#if defined(OS_LINUX)
 	ldr		w11, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w11, [sp, #(STACKSIZE + 28)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -21922,7 +22214,8 @@
 
 
 
-//                                             w0        x1         x2         x3            x4         w5       x6         w7       sp+0       sp+8                sp+16   sp+24
+// OS_LINUX                                    w0        x1         x2         x3            x4         w5       x6         w7       sp+0       sp+8                sp+16   sp+24
+// OS_MAC                                      w0        x1         x2         x3            x4         w5       x6         w7       sp+0       sp+8                sp+16   sp+20
 // void kernel_dtrsm_nt_rl_inv_4x4_vs_lib44cc4(int kmax, double *A, double *B, double *beta, double *C, int ldc, double *D, int ldd, double *E, double *inv_diag_E, int m1, int n1)
 
 	.align	4
@@ -21958,7 +22251,11 @@
 	mov		w10, w5 // ldc
 	lsl		w10, w10, #3 // 8*ldc
 	ldr		w11, [sp, #(STACKSIZE + 16)] // m1
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 20)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_M1B_4X4_VS_LIB
@@ -21971,7 +22268,11 @@
 	// solution
 	ldr		x8, [sp, #(STACKSIZE + 0)] // E
 	ldr		x9, [sp, #(STACKSIZE + 8)] // inv_diag_E
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 20)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_EDGE_TRSM_RLT_INV_4X4_VS_LIB4
@@ -21986,7 +22287,11 @@
 	mov		w9, w7 // ldd
 	lsl		w9, w9, #3 // 8*ldd
 	ldr		w10, [sp, #(STACKSIZE + 16)] // m1
+#if defined(OS_LINUX)
 	ldr		w11, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w11, [sp, #(STACKSIZE + 20)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -22008,7 +22313,7 @@
 
 
 
-//                                          w0        x1         x2         w3       x4            x5         w6       x7         sp+0      sp+8      sp+16     sp+24
+//                                          w0        x1         x2         w3       x4            x5         w6       x7         sp+0     sp+8       sp+16    sp+24
 // void kernel_dtrsm_nt_rl_inv_4x4_lib4cccc(int kmax, double *A, double *B, int ldb, dobule *beta, double *C, int ldc, double *D, int ldd, double *E, int lde, double *inv_diag_E)
 
 	.align	4
@@ -22093,7 +22398,8 @@
 
 
 
-//                                             w0        x1         x2         w3       x4            x5         w6       x7         sp+0      sp+8      sp+16     sp+24              sp+32   sp+40
+// OS_LINUX                                    w0        x1         x2         w3       x4            x5         w6       x7         sp+0     sp+8       sp+16    sp+24               sp+32   sp+40
+// OS_MAC                                      w0        x1         x2         w3       x4            x5         w6       x7         sp+0     sp+8       sp+16    sp+24               sp+32   sp+36
 // void kernel_dtrsm_nt_rl_inv_4x4_vs_lib4cccc(int kmax, double *A, double *B, int ldb, dobule *beta, double *C, int ldc, double *D, int ldd, double *E, int lde, double *inv_diag_E, int m1, int n1)
 
 	.align	4
@@ -22117,7 +22423,11 @@
 	mov		w11, w3 // ldb
 	lsl		w11, w11, #3 // 8*ldb
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 40)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 36)] // n1
+#endif
 	cmp		w12, #1
 	bgt		100f
 
@@ -22131,7 +22441,11 @@
 
 100:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 40)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 36)] // n1
+#endif
 	cmp		w12, #2
 	bgt		101f
 
@@ -22145,7 +22459,11 @@
 
 101:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 40)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 36)] // n1
+#endif
 	cmp		w12, #3
 	bgt		102f
 
@@ -22175,7 +22493,11 @@
 	mov		w10, w6 // ldc
 	lsl		w10, w10, #3 // 8*ldc
 	ldr		w11, [sp, #(STACKSIZE + 32)] // m1
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 40)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 36)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_M1B_4X4_VS_LIB
@@ -22190,7 +22512,11 @@
 	ldr		w9, [sp, #(STACKSIZE + 16)] // sde
 	lsl		w9, w9, #3 // 8*ldc
 	ldr		x10, [sp, #(STACKSIZE + 24)] // inv_diag_E
+#if defined(OS_LINUX)
 	ldr		w11, [sp, #(STACKSIZE + 40)] // n1
+#else // defined(OS_MAC)
+	ldr		w11, [sp, #(STACKSIZE + 36)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_EDGE_TRSM_RLT_INV_4X4_VS_LIB
@@ -22205,7 +22531,11 @@
 	ldr		w9, [sp, #(STACKSIZE + 0)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
 	ldr		w10, [sp, #(STACKSIZE + 32)] // m1
+#if defined(OS_LINUX)
 	ldr		w11, [sp, #(STACKSIZE + 40)] // n1
+#else // defined(OS_MAC)
+	ldr		w11, [sp, #(STACKSIZE + 36)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -22227,7 +22557,7 @@
 
 
 
-//                                         w0        x1         x2         x3            x4         w5       x6         w7       sp+0
+//                                          w0        x1         x2         x3            x4         w5       x6         w7       sp+0
 // void kernel_dtrsm_nt_rl_one_4x4_lib44cc4(int kmax, double *A, double *B, double *beta, double *C, int ldc, double *D, int ldd, double *E)
 
 	.align	4
@@ -22307,7 +22637,8 @@
 
 
 
-//                                            w0        x1         x2         x3            x4         w5       x6         w7       sp+0       sp+8    sp+16
+// OS_LINUX                                    w0        x1         x2         x3            x4         w5       x6         w7       sp+0       sp+8    sp+16
+// OS_MAC                                      w0        x1         x2         x3            x4         w5       x6         w7       sp+0       sp+8    sp+12
 // void kernel_dtrsm_nt_rl_one_4x4_vs_lib44cc4(int kmax, double *A, double *B, double *beta, double *C, int ldc, double *D, int ldd, double *E, int m1, int n1)
 
 	.align	4
@@ -22343,7 +22674,11 @@
 	mov		w10, w5 // ldc
 	lsl		w10, w10, #3 // 8*ldc
 	ldr		w11, [sp, #(STACKSIZE + 8)] // m1
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 16)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 12)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_M1B_4X4_VS_LIB
@@ -22355,7 +22690,11 @@
 
 	// solution
 	ldr		x8, [sp, #(STACKSIZE + 0)] // E
+#if defined(OS_LINUX)
 	ldr		w9, [sp, #(STACKSIZE + 16)] // n1
+#else // defined(OS_MAC)
+	ldr		w9, [sp, #(STACKSIZE + 12)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_EDGE_TRSM_RLT_ONE_4X4_VS_LIB4
@@ -22370,7 +22709,11 @@
 	mov		w9, w7 // ldd
 	lsl		w9, w9, #3 // 8*ldd
 	ldr		w10, [sp, #(STACKSIZE + 8)] // m1
+#if defined(OS_LINUX)
 	ldr		w11, [sp, #(STACKSIZE + 16)] // n1
+#else // defined(OS_MAC)
+	ldr		w11, [sp, #(STACKSIZE + 12)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -22473,7 +22816,8 @@
 
 
 
-//                                             w0        x1         x2         x3            x4         w5       x6         w7       sp+0       sp+8                sp+16   sp+24
+// OS_LINUX                                    w0        x1         x2         x3            x4         w5       x6         w7       sp+0       sp+8                sp+16   sp+24
+// OS_MAC                                      w0        x1         x2         x3            x4         w5       x6         w7       sp+0       sp+8                sp+16   sp+20
 // void kernel_dtrsm_nt_rl_inv_4x4_vs_lib44cc4(int kmax, double *A, double *B, double *beta, double *C, int ldc, double *D, int ldd, double *E, double *inv_diag_E, int m1, int n1)
 
 	.align	4
@@ -22509,7 +22853,11 @@
 	mov		w10, w5 // ldc
 	lsl		w10, w10, #3 // 8*ldc
 	ldr		w11, [sp, #(STACKSIZE + 16)] // m1
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 20)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_M1B_4X4_VS_LIB
@@ -22522,7 +22870,11 @@
 	// solution
 	ldr		x8, [sp, #(STACKSIZE + 0)] // E
 	ldr		x9, [sp, #(STACKSIZE + 8)] // inv_diag_E
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 20)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_EDGE_TRSM_RUT_INV_4X4_VS_LIB4
@@ -22537,7 +22889,11 @@
 	mov		w9, w7 // ldd
 	lsl		w9, w9, #3 // 8*ldd
 	ldr		w10, [sp, #(STACKSIZE + 16)] // m1
+#if defined(OS_LINUX)
 	ldr		w11, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w11, [sp, #(STACKSIZE + 20)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -22559,7 +22915,7 @@
 
 
 
-//                                    w0        x1         x2         x3         w4       x5         w6       x7
+//                                     w0        x1         x2         x3         w4       x5         w6       x7
 // void kernel_dpotrf_nt_l_4x4_lib44cc(int kmax, double *A, double *B, double *C, int ldc, double *D, int ldd, double *inv_diag_D)
 
 	.align	4
@@ -22638,7 +22994,8 @@
 
 
 
-//                                       w0        x1         x2         x3         w4       x5         w6       x7                  sp+0    sp+1
+// OS_LINUX                               w0        x1         x2         x3         w4       x5         w6       x7                  sp+0    sp+8
+// OS_MAC                                 w0        x1         x2         x3         w4       x5         w6       x7                  sp+0    sp+4
 // void kernel_dpotrf_nt_l_4x4_vs_lib44cc(int kmax, double *A, double *B, double *C, int ldc, double *D, int ldd, double *inv_diag_D, int m1, int n1)
 
 	.align	4
@@ -22673,7 +23030,11 @@
 	mov		w9, w4 // ldc
 	lsl		w9, w9, #3 // 8*ldc
 	ldr		w10, [sp, #(STACKSIZE + 0)] // m1
+#if defined(OS_LINUX)
 	ldr		w11, [sp, #(STACKSIZE + 8)] // n1
+#else // defined(OS_MAC)
+	ldr		w11, [sp, #(STACKSIZE + 4)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_M11_4X4_VS_LIB
@@ -22685,7 +23046,11 @@
 
 	// factorization
 	mov		x8, x7 // inv_diag_E
+#if defined(OS_LINUX)
 	ldr		w9, [sp, #(STACKSIZE + 8)] // n1
+#else // defined(OS_MAC)
+	ldr		w9, [sp, #(STACKSIZE + 4)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_EDGE_POTRF_4X4_VS_LIB4
@@ -22700,7 +23065,11 @@
 	mov		w9, w6 // ldd
 	lsl		w9, w9, #3 // 8*ldd
 	ldr		w10, [sp, #(STACKSIZE + 0)] // m1
+#if defined(OS_LINUX)
 	ldr		w11, [sp, #(STACKSIZE + 8)] // n1
+#else // defined(OS_MAC)
+	ldr		w11, [sp, #(STACKSIZE + 4)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_L_4X4_VS_LIB
@@ -22722,7 +23091,7 @@
 
 
 
-//                                         w0        x1         x2         x3       x4            x5         w6       x7         sp+0     sp+8       sp+16
+//                                          w0        x1         x2         x3       x4            x5         w6       x7         sp+0     sp+8       sp+16
 // void kernel_dtrsm_nn_ll_one_4x4_lib4cccc(int kmax, double *A, double *B, int ldb, double *beta, double *C, int ldc, double *D, int ldd, double *E, int lde)
 
 	.align	4
@@ -22807,7 +23176,8 @@
 
 
 
-//                                            w0        x1         x2         x3       x4            x5         w6       x7         sp+0     sp+8       sp+16    sp+24   sp+32
+// OS_LINUX                                    w0        x1         x2         x3       x4            x5         w6       x7         sp+0     sp+8       sp+16    sp+24   sp+32
+// OS_MAC                                      w0        x1         x2         x3       x4            x5         w6       x7         sp+0     sp+8       sp+16    sp+20   sp+24
 // void kernel_dtrsm_nn_ll_one_4x4_vs_lib4cccc(int kmax, double *A, double *B, int ldb, double *beta, double *C, int ldc, double *D, int ldd, double *E, int lde, int m1, int n1)
 
 	.align	4
@@ -22831,7 +23201,11 @@
 	mov		w11, w3 // ldb
 	lsl		w11, w11, #3 // 8*ldb
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#endif
 	cmp		w12, #1
 	bgt		100f
 
@@ -22845,7 +23219,11 @@
 
 100:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#endif
 	cmp		w12, #2
 	bgt		101f
 
@@ -22859,7 +23237,11 @@
 
 101:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#endif
 	cmp		w12, #3
 	bgt		102f
 
@@ -22888,8 +23270,13 @@
 	mov		x9, x5 // C
 	mov		w10, w6 // ldc
 	lsl		w10, w10, #3 // 8*ldc
+#if defined(OS_LINUX)
 	ldr		w11, [sp, #(STACKSIZE + 24)] // m1
 	ldr		w12, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w11, [sp, #(STACKSIZE + 20)] // m1
+	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_M1B_4X4_VS_LIB
@@ -22903,7 +23290,11 @@
 	ldr		x8, [sp, #(STACKSIZE + 8)] // E
 	ldr		w9, [sp, #(STACKSIZE + 16)] // sde
 	lsl		w9, w9, #3 // 8*ldc
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 24)] // m1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 20)] // m1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_EDGE_TRSM_LLN_ONE_4X4_VS_LIBC
@@ -22917,8 +23308,13 @@
 	mov		x8, x7 // D
 	ldr		w9, [sp, #(STACKSIZE + 0)] // sdd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 24)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 32)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 20)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 24)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -22940,7 +23336,7 @@
 
 
 
-//                                          w0        x1         x2         w3       x4            x5         w6       x7         sp+0      sp+8      sp+16     sp+24
+//                                          w0        x1         x2         w3       x4            x5         w6       x7         sp+0     sp+8       sp+16    sp+24
 // void kernel_dtrsm_nn_rl_inv_4x4_lib4cccc(int kmax, double *A, double *B, int ldb, dobule *beta, double *C, int ldc, double *D, int ldd, double *E, int lde, double *inv_diag_E)
 
 	.align	4
@@ -23025,7 +23421,8 @@
 
 
 
-//                                             w0        x1         x2         w3       x4            x5         w6       x7         sp+0      sp+8      sp+16     sp+24              sp+32   sp+40
+// OS_LINUX                                    w0        x1         x2         w3       x4            x5         w6       x7         sp+0     sp+8       sp+16    sp+24               sp+32   sp+40
+// OS_MAC                                      w0        x1         x2         w3       x4            x5         w6       x7         sp+0     sp+8       sp+16    sp+24               sp+32   sp+36
 // void kernel_dtrsm_nn_rl_inv_4x4_vs_lib4cccc(int kmax, double *A, double *B, int ldb, dobule *beta, double *C, int ldc, double *D, int ldd, double *E, int lde, double *inv_diag_E, int m1, int n1)
 
 	.align	4
@@ -23049,7 +23446,11 @@
 	mov		w11, w3 // ldb
 	lsl		w11, w11, #3 // 8*ldb
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 40)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 36)] // n1
+#endif
 	cmp		w12, #1
 	bgt		100f
 
@@ -23063,7 +23464,11 @@
 
 100:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 40)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 36)] // n1
+#endif
 	cmp		w12, #2
 	bgt		101f
 
@@ -23077,7 +23482,11 @@
 
 101:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 40)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 36)] // n1
+#endif
 	cmp		w12, #3
 	bgt		102f
 
@@ -23107,7 +23516,11 @@
 	mov		w10, w6 // ldc
 	lsl		w10, w10, #3 // 8*ldc
 	ldr		w11, [sp, #(STACKSIZE + 32)] // m1
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 40)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 36)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_SCALE_M1B_4X4_VS_LIB
@@ -23122,7 +23535,11 @@
 	ldr		w9, [sp, #(STACKSIZE + 16)] // sde
 	lsl		w9, w9, #3 // 8*ldc
 	ldr		x10, [sp, #(STACKSIZE + 24)] // inv_diag_E
+#if defined(OS_LINUX)
 	ldr		w11, [sp, #(STACKSIZE + 40)] // n1
+#else // defined(OS_MAC)
+	ldr		w11, [sp, #(STACKSIZE + 36)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_EDGE_TRSM_RLN_INV_4X4_VS_LIB
@@ -23137,7 +23554,11 @@
 	ldr		w9, [sp, #(STACKSIZE + 0)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
 	ldr		w10, [sp, #(STACKSIZE + 32)] // m1
+#if defined(OS_LINUX)
 	ldr		w11, [sp, #(STACKSIZE + 40)] // n1
+#else // defined(OS_MAC)
+	ldr		w11, [sp, #(STACKSIZE + 36)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -23241,7 +23662,8 @@
 
 
 
-//                                             w0        x1         x2         w3       x4            x5         x6         x7         sp+0     sp+8                sp+16   sp+24
+// OS_LINUX                                    w0        x1         x2         w3       x4            x5         x6         x7         sp+0     sp+8                sp+16   sp+24
+// OS_MAC                                      w0        x1         x2         w3       x4            x5         x6         x7         sp+0     sp+8                sp+16   sp+20
 // void kernel_dtrsm_nn_ru_inv_4x4_vs_lib4c44c(int kmax, double *A, double *B, int ldb, double *beta, double *C, double *D, double *E, int lde, double *inv_diag_E, int m1, int n1)
 
 	.align	4
@@ -23265,7 +23687,11 @@
 	mov		w11, w3 // ldb
 	lsl		w11, w11, #3 // 8*ldb
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 20)] // n1
+#endif
 	cmp		w12, #1
 	bgt		100f
 
@@ -23279,7 +23705,11 @@
 
 100:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 20)] // n1
+#endif
 	cmp		w12, #2
 	bgt		101f
 
@@ -23293,7 +23723,11 @@
 
 101:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 20)] // n1
+#endif
 	cmp		w12, #3
 	bgt		102f
 
@@ -23334,7 +23768,11 @@
 	ldr		w9, [sp, #(STACKSIZE + 0)] // sde
 	lsl		w9, w9, #3 // 8*ldc
 	ldr		x10, [sp, #(STACKSIZE + 8)] // inv_diag_E
+#if defined(OS_LINUX)
 	ldr		w11, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w11, [sp, #(STACKSIZE + 20)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_EDGE_TRSM_RUN_INV_4X4_VS_LIB
@@ -23347,7 +23785,11 @@
 	// store
 	mov		x8, x6 // D
 	ldr		w9, [sp, #(STACKSIZE + 16)] // m1
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 20)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB4
@@ -23369,7 +23811,7 @@
 
 
 
-//                                 w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8
+//                                  w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8
 // void kernel_dgemm_nt_4x4_libc4cc(int kmax, double *alpha, double *A, int lda, double *B, double *beta, double *C, int ldc, double *D, int ldd)
 
 	.align	4
@@ -23448,7 +23890,8 @@
 
 
 
-//                                    w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8     sp+16   sp+24
+// OS_LINUX                            w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8     sp+16   sp+24
+// OS_MAC                              w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8     sp+12   sp+16
 // void kernel_dgemm_nt_4x4_vs_libc4cc(int kmax, double *alpha, double *A, int lda, double *B, double *beta, double *C, int ldc, double *D, int ldd, int m1, int n1)
 
 	.align	4
@@ -23472,7 +23915,11 @@
 	mov		w11, w3 // lda
 	lsl		w11, w11, #3 // 8*ldb
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 16)] // m1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 12)] // m1
+#endif
 	cmp		w12, #1
 	bgt		100f
 
@@ -23486,7 +23933,11 @@
 
 100:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 16)] // m1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 12)] // m1
+#endif
 	cmp		w12, #2
 	bgt		101f
 
@@ -23500,7 +23951,11 @@
 
 101:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 16)] // m1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 12)] // m1
+#endif
 	cmp		w12, #3
 	bgt		102f
 
@@ -23530,8 +23985,13 @@
 	mov		x10, x6 // C
 	mov		w11, w7 // ldc
 	lsl		w11, w11, #3 // 8*ldc
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 16)] // m1
 	ldr		w13, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 12)] // m1
+	ldr		w13, [sp, #(STACKSIZE + 16)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_TRAN_4X4_LIB
@@ -23552,8 +24012,13 @@
 	ldr		x8, [sp, #(STACKSIZE + 0)] // D
 	ldr		w9, [sp, #(STACKSIZE + 8)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 16)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 12)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 16)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
@@ -23575,7 +24040,7 @@
 
 
 
-//                                 w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8
+//                                  w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8
 // void kernel_dgemm_tt_4x4_libc4cc(int kmax, double *alpha, double *A, int lda, double *B, double *beta, double *C, int ldc, double *D, int ldd)
 
 	.align	4
@@ -23653,7 +24118,8 @@
 
 
 
-//                                    w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8     sp+16   sp+24
+// OS_LINUX                            w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8     sp+16   sp+24
+// OS_MAC                              w0        x1             x2         x3         x4       x5            w6         x7       sp+0       sp+8     sp+12   sp+16
 // void kernel_dgemm_tt_4x4_vs_libc4cc(int kmax, double *alpha, double *A, int lda, double *B, double *beta, double *C, int ldc, double *D, int ldd, int m1, int n1)
 
 	.align	4
@@ -23677,7 +24143,11 @@
 	mov		w11, w3 // lda
 	lsl		w11, w11, #3 // 8*ldb
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 16)] // m1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 12)] // m1
+#endif
 	cmp		w12, #1
 	bgt		100f
 
@@ -23691,7 +24161,11 @@
 
 100:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 16)] // m1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 12)] // m1
+#endif
 	cmp		w12, #2
 	bgt		101f
 
@@ -23705,7 +24179,11 @@
 
 101:
 
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 16)] // m1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 12)] // m1
+#endif
 	cmp		w12, #3
 	bgt		102f
 
@@ -23735,8 +24213,13 @@
 	mov		x10, x6 // C
 	mov		w11, w7 // ldc
 	lsl		w11, w11, #3 // 8*ldc
+#if defined(OS_LINUX)
 	ldr		w12, [sp, #(STACKSIZE + 16)] // m1
 	ldr		w13, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w12, [sp, #(STACKSIZE + 12)] // m1
+	ldr		w13, [sp, #(STACKSIZE + 16)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_TRAN_4X4_LIB
@@ -23757,8 +24240,13 @@
 	ldr		x8, [sp, #(STACKSIZE + 0)] // D
 	ldr		w9, [sp, #(STACKSIZE + 8)] // ldd
 	lsl		w9, w9, #3 // 8*ldd
+#if defined(OS_LINUX)
 	ldr		w10, [sp, #(STACKSIZE + 16)] // m1
 	ldr		w11, [sp, #(STACKSIZE + 24)] // n1
+#else // defined(OS_MAC)
+	ldr		w10, [sp, #(STACKSIZE + 12)] // m1
+	ldr		w11, [sp, #(STACKSIZE + 16)] // n1
+#endif
 
 #if MACRO_LEVEL>=1
 	INNER_STORE_4X4_VS_LIB
