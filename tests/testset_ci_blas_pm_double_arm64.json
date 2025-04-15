@@ -1,19 +1,19 @@
 {
   "options":{
     "rebuild": 1,
-    "silent": 1,
+    "silent": 0,
     "continue": 0
   },
   "test_macros":
   {
-    "VERBOSE":3
+    "VERBOSE": 1
   },
   "env_flags":{
     "CC":"gcc",
     "CFLAGS": "-Wuninitialized"
   },
   "blasfeo_flags":{
-    "BLASFEO_REF_API": 0,
+    "BLASFEO_REF_API": 1,
     "BLAS_API": 1,
     "EXTERNAL_BLAS": "SYSTEM"
   },
@@ -33,9 +33,9 @@
     "PANELMAJ"
   ],
   "TARGET": [
+    "GENERIC",
     "ARMV8A_ARM_CORTEX_A57",
-    "ARMV8A_ARM_CORTEX_A53",
-    "GENERIC"
+    "ARMV8A_ARM_CORTEX_A53"
   ],
   "LA": [
     "HIGH_PERFORMANCE"

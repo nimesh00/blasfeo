@@ -1,12 +1,12 @@
 {
   "options":{
     "rebuild": 1,
-    "silent": 1,
+    "silent": 0,
     "continue": 0
   },
   "test_macros":
   {
-    "VERBOSE": 3
+    "VERBOSE": 1
   },
   "env_flags":{
     "CC":"gcc",
@@ -14,26 +14,23 @@
   },
   "blasfeo_flags":{
     "BLASFEO_REF_API": 1,
-    "BLAS_API": 0,
+    "BLAS_API": 1,
     "EXTERNAL_BLAS": "SYSTEM"
   },
   "precisions": [
-    "double"
+    "single"
   ],
   "apis": [
-    "blasfeo"
+    "blas"
   ],
   "K_MAX_STACK":[
-    1000
+    0, 500
   ],
   "PACKING_ALG":[
-    "ALG_0",
-    "ALG_M1",
-    "ALG_N1",
-    "ALG_2"
+    "AUTO"
   ],
   "MF": [
-    "COLMAJ"
+    "PANELMAJ"
   ],
   "TARGET": [
     "GENERIC",
@@ -48,7 +45,26 @@
     "gemm_nn",
     "gemm_nt",
     "gemm_tn",
-    "gemm_tt"
+    "gemm_tt",
+    "trsm_llnn",
+    "trsm_llnu",
+    "trsm_lltn",
+    "trsm_lltu",
+    "trsm_lunn",
+    "trsm_lunu",
+    "trsm_lutn",
+    "trsm_lutu",
+    "trsm_rlnn",
+    "trsm_rlnu",
+    "trsm_rltn",
+    "trsm_rltu",
+    "trsm_runn",
+    "trsm_runu",
+    "trsm_rutn",
+    "trsm_rutu",
+    "potrf_l",
+    "potrf_u"
   ]
 }
+
 

@@ -284,7 +284,7 @@ alg1:
 			goto left_12_1;
 			}
 		}
-#elif defined(TARGET_X64_INTEL_SANDY_BRIDGE)
+#elif 0 //defined(TARGET_X64_INTEL_SANDY_BRIDGE)
 	if(m<=8)
 		{
 		if(m<=4)
@@ -490,7 +490,7 @@ left_12_1:
 
 
 
-#if defined(TARGET_X64_INTEL_HASWELL) | defined(TARGET_X64_INTEL_SANDY_BRIDGE)
+#if defined(TARGET_X64_INTEL_HASWELL) //| defined(TARGET_X64_INTEL_SANDY_BRIDGE)
 left_8_1:
 
 	m_max = m<jj ? m : jj;
@@ -647,7 +647,7 @@ end_1:
 
 alg2:
 
-#ifdef EXT_DEP
+#ifdef EXT_DEP_MALLOC
 
 	m1 = (m+128-1)/128*128;
 	n1 = (n+128-1)/128*128;
@@ -1271,11 +1271,11 @@ end_m_2:
 //		ipiv[ii] += 1;
 	return;
 
-#else // EXT_DEP
+#else // EXT_DEP_MALLOC
 
 	exit(1);
 
-#endif // EXT_DEP
+#endif // EXT_DEP_MALLOC
 
 	// never to get here
 	return;

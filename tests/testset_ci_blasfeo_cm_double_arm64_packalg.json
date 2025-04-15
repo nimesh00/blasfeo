@@ -1,12 +1,12 @@
 {
   "options":{
     "rebuild": 1,
-    "silent": 1,
+    "silent": 0,
     "continue": 0
   },
   "test_macros":
   {
-    "VERBOSE": 2
+    "VERBOSE": 1
   },
   "env_flags":{
     "CC":"gcc",
@@ -24,19 +24,21 @@
     "blasfeo"
   ],
   "K_MAX_STACK":[
-    0, 500
+    1000
   ],
   "PACKING_ALG":[
-    "AUTO"
+    "ALG_0",
+    "ALG_M1",
+    "ALG_N1",
+    "ALG_2"
   ],
   "MF": [
-    "PANELMAJ"
+    "COLMAJ"
   ],
   "TARGET": [
     "GENERIC",
-    "X64_INTEL_CORE",
-    "X64_INTEL_HASWELL",
-    "X64_INTEL_SANDY_BRIDGE"
+    "ARMV8A_ARM_CORTEX_A57",
+    "ARMV8A_ARM_CORTEX_A53"
   ],
   "LA": [
     "HIGH_PERFORMANCE"
@@ -45,8 +47,8 @@
     "gemm_nn",
     "gemm_nt",
     "gemm_tn",
-    "gemm_tt",
-    "potrf_l",
-    "potrf_l_mn"
+    "gemm_tt"
   ]
 }
+
+

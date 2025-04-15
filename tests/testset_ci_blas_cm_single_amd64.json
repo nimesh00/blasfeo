@@ -1,12 +1,12 @@
 {
   "options":{
     "rebuild": 1,
-    "silent": 1,
+    "silent": 0,
     "continue": 0
   },
   "test_macros":
   {
-    "VERBOSE": 3
+    "VERBOSE": 1
   },
   "env_flags":{
     "CC":"gcc",
